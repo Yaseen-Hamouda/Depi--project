@@ -1,0 +1,24 @@
+﻿@model Bookify.Core.Models.Booking
+
+<h2>Complete Booking</h2>
+
+<div class="card p-4 shadow">
+    <h4>Room: @Model.Room.RoomNumber</h4>
+    <p>Check In: @Model.CheckInDate.ToShortDateString()</p>
+    <p>Check Out: @Model.CheckOutDate.ToShortDateString()</p>
+    <p>Number of Nights: @( (Model.CheckOutDate - Model.CheckInDate).Days )</p>
+
+    <h3>Total: @Model.TotalPrice $</h3>
+
+    <form method="post">
+        <div class="mb-3">
+            <label>Payment Method</label>
+            <select name="paymentMethod" class="form-select">
+                <option value="Cash">Cash</option>
+                <option value="Online">Online (Stripe)</option>
+            </select>
+        </div>
+
+        <button class="btn btn-success">Complete Booking</button>
+    </form>
+</div>

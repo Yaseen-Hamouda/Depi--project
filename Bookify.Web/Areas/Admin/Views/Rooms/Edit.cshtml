@@ -1,0 +1,40 @@
+﻿@model Bookify.Core.Models.Room
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+<h2>Edit Room</h2>
+
+<form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+
+
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="RoomNumber" class="form-label"></label>
+        <input asp-for="RoomNumber" class="form-control" />
+        <span asp-validation-for="RoomNumber" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label>Room Type</label>
+        <select asp-for="RoomTypeId" asp-items="ViewBag.RoomTypes" class="form-select"></select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Room Image</label>
+        <input type="file" name="ImageFile" class="form-control" />
+    </div>
+    
+
+    <div class="mb-3">
+        <label asp-for="Status" class="form-label"></label>
+        <input asp-for="Status" class="form-control" />
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+
+    <button class="btn btn-primary">Update</button>
+    <a href="/Admin/Rooms" class="btn btn-secondary">Cancel</a>
+</form>

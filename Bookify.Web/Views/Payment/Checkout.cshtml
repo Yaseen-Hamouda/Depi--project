@@ -1,0 +1,44 @@
+﻿@model Bookify.Core.Models.Booking
+@{
+    ViewData["Title"] = "Payment Checkout";
+}
+
+<div class="container mt-4">
+
+    <h2 class="mb-3">Payment Checkout</h2>
+
+    <div class="card p-4 shadow">
+
+        <h4>Booking Summary</h4>
+        <hr />
+
+        <p><strong>Room:</strong> @Model.Room.RoomNumber (@Model.Room.RoomType.Name)</p>
+        <p><strong>Check-In:</strong> @Model.CheckInDate.ToShortDateString()</p>
+        <p><strong>Check-Out:</strong> @Model.CheckOutDate.ToShortDateString()</p>
+
+        @{
+            var nights = (Model.CheckOutDate - Model.CheckInDate).Days;
+        }
+
+        <p><strong>Nights:</strong> @nights</p>
+        <p><strong>Price Per Night:</strong> @Model.Room.RoomType.Price $</p>
+
+        <h4 class="text-success mt-3">Total: @Model.TotalPrice $</h4>
+
+        <form asp-action="Confirm" method="post" class="mt-3">
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" name="bookingId" value="@Model.Id" />
+
+            <label class="form-label">Select Payment Method:</label>
+            <select name="paymentMethod" class="form-select mb-3">
+                <option value="Cash">Cash</option>
+                <option value="Stripe">Pay with Card (Stripe)</option>
+            </select>
+
+            <button class="btn btn-primary w-100">Confirm Payment</button>
+        </form>
+
+    </div>
+
+</div>

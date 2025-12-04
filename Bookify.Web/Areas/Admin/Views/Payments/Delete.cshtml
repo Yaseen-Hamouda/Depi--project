@@ -1,0 +1,17 @@
+﻿@model Bookify.Core.Models.Payment
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Delete Payment</h2>
+
+<div class="alert alert-danger">
+    Are you sure you want to delete payment #@Model.Id?
+</div>
+
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
+
+    <button class="btn btn-danger">Delete</button>
+    <a href="/Admin/Payments" class="btn btn-secondary">Cancel</a>
+</form>

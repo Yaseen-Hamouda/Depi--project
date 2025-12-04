@@ -1,0 +1,50 @@
+﻿@model IEnumerable<Bookify.Core.Models.ApplicationUser>
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Users Management</h2>
+
+<a href="/Admin/Users/CreateAdmin" class="btn btn-success mb-3">+ Add Admin</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th style="width:180px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var u in Model)
+        {
+            <tr>
+                <td>@u.FullName</td>
+                <td>@u.Email</td>
+                <td>
+                    @{
+                        var isLocked = u.LockoutEnd != null && u.LockoutEnd > DateTime.Now;
+                    }
+
+                    @(isLocked ? "Locked" : "Active")
+                </td>
+                <td>
+                    <a href="/Admin/Users/Edit/@u.Id" class="btn btn-warning btn-sm">Edit</a>
+
+                    @if (u.LockoutEnd != null && u.LockoutEnd > DateTime.Now)
+                    {
+                        <a href="/Admin/Users/Unlock/@u.Id" class="btn btn-success btn-sm">Unlock</a>
+                    }
+                    else
+                    {
+                        <a href="/Admin/Users/Lock/@u.Id" class="btn btn-danger btn-sm">Lock</a>
+                    }
+
+                    <a href="/Admin/Users/Delete/@u.Id" class="btn btn-dark btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

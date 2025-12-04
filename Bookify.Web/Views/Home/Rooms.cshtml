@@ -1,0 +1,44 @@
+﻿@model IEnumerable<Bookify.Core.Models.Room>
+
+<h2 class="mt-4">Available Rooms</h2>
+
+<form method="get" class="row mb-4">
+
+    <div class="col-md-4">
+        <input type="text" name="search" placeholder="Search by number or type" class="form-control" />
+    </div>
+
+    <div class="col-md-4">
+        <select name="type" class="form-select">
+            <option value="">All Types</option>
+            @foreach (var t in ViewBag.RoomTypes)
+            {
+                <option value="@t.Id">@t.Name</option>
+            }
+            }
+        </select>
+    </div>
+
+    <div class="col-md-4">
+        <button class="btn btn-primary w-100">Search</button>
+    </div>
+</form>
+
+<div class="row">
+    @foreach (var room in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card shadow">
+                <img src="/images/room.jpg" class="card-img-top" />
+
+                <div class="card-body">
+                    @* <h5>Room @room.Number</h5> *@
+                    <p>Type: @room.RoomType.Name</p>
+                    @* <p class="fw-bold text-success">$@room.PricePerNight / night</p> *@
+
+                    <a href="/Home/RoomDetails/@room.Id" class="btn btn-primary w-100">View Details</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

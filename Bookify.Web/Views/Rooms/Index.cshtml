@@ -1,0 +1,50 @@
+﻿@model IEnumerable<Bookify.Core.Models.Room>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Available Rooms";
+}
+
+<h2 class="mb-4">Available Rooms</h2>
+
+<form method="get" class="row mb-4">
+
+    <div class="col-md-4">
+        <input name="search" class="form-control" placeholder="Search by room number..." />
+    </div>
+
+    <div class="col-md-4">
+        <select name="type" class="form-select">
+            <option value="">All Room Types</option>
+            @foreach (var type in ViewBag.RoomTypes)
+            {
+                <option value="@type.Id">@type.Name</option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-2">
+        <button class="btn btn-primary w-100">Filter</button>
+    </div>
+
+</form>
+
+<div class="row">
+    @foreach (var room in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <img src="@room.ImageUrl" class="card-img-top" style="height: 200px; object-fit: cover" />
+
+                <div class="card-body">
+                    <h5 class="card-title">Room @room.RoomNumber</h5>
+                    <p class="text-muted">@room.RoomType.Name</p>
+
+                    <a href="/Rooms/Details/@room.Id" class="btn btn-outline-primary w-100">
+                        View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

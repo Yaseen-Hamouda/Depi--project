@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Bookify.Core.Models.Payment>
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2 class="mt-3">Payments</h2>
+
+<a href="/Admin/Payments/Create" class="btn btn-primary mb-3">+ Add Payment</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Booking</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th style="width:150px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.BookingId</td>
+                <td>$@p.Amount</td>
+                <td>@p.CreatedAt.ToShortDateString()</td>
+                @* <td>@p.Status</td> *@
+                <td>
+                    <a href="/Admin/Payments/Edit/@p.Id" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="/Admin/Payments/Delete/@p.Id" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
