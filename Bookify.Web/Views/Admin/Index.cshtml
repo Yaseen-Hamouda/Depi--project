@@ -1,0 +1,140 @@
+﻿@model Bookify.Web.Controllers.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container-fluid py-4">
+    <h2 class="mb-4">Admin Dashboard</h2>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm">
+                <h6 class="mb-2">Total Rooms</h6>
+                <h3>@Model.TotalRooms</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm">
+                <h6 class="mb-2">Available Rooms</h6>
+                <h3>@Model.AvailableRooms</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm">
+                <h6 class="mb-2">Total Bookings</h6>
+                <h3>@Model.TotalBookings</h3>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm">
+                <h6 class="mb-2">Pending Payments</h6>
+                <h3>@Model.PendingPayments</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card p-3 shadow-sm">
+                <h5>Bookings (Last months)</h5>
+                <canvas id="bookingsLineChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card p-3 shadow-sm">
+                <h5>Rooms by Type</h5>
+                <canvas id="roomTypesPieChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card p-3 shadow-sm">
+                <h5>Recent Bookings</h5>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Booking Id</th>
+                                <th>User</th>
+                                <th>Room</th>
+                                <th>Check-in</th>
+                                <th>Check-out</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var b in Model.RecentBookings)
+                            {
+                                <tr>
+                                    <td>@b.Id</td>
+                                    <td>@b.UserId</td>
+                                    <td>@b.Room?.RoomNumber ?? b.RoomId.ToString()</td>
+                                    <td>@b.CheckInDate.ToShortDateString()</td>
+                                    <td>@b.CheckOutDate.ToShortDateString()</td>
+                                    <td>$@b.TotalPrice</td>
+                                    <td>@b.PaymentStatus</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // Bookings per month (line)
+        fetch('@Url.Action("BookingsPerMonth", "Admin", new { months = 6 })')
+            .then(r => r.json())
+            .then(data => {
+                const labels = data.map(x => x.label);
+                const counts = data.map(x => x.count);
+
+                const ctx = document.getElementById('bookingsLineChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Bookings',
+                            data: counts,
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: { responsive: true }
+                });
+            });
+
+        // Room types distribution (pie)
+        fetch('@Url.Action("RoomTypesDistribution", "Admin")')
+            .then(r => r.json())
+            .then(data => {
+                const labels = data.map(x => x.name);
+                const counts = data.map(x => x.count);
+
+                const ctx2 = document.getElementById('roomTypesPieChart').getContext('2d');
+                new Chart(ctx2, {
+                    type: 'pie',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: counts
+                        }]
+                    },
+                    options: { responsive: true }
+                });
+            });
+    </script>
+}

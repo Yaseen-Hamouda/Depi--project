@@ -1,0 +1,29 @@
+﻿@model Bookify.Core.Models.Booking
+@{
+    ViewData["Title"] = "Book Room";
+    var room = ViewBag.Room;
+}
+
+<h2>Book @room.RoomNumber - @room.RoomType.Name</h2>
+
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" asp-for="RoomId" />
+
+    <div class="mb-3">
+        <label>Check In</label>
+        <input asp-for="CheckInDate" type="date" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Check Out</label>
+        <input asp-for="CheckOutDate" type="date" class="form-control" />
+    </div>
+
+    <div class="alert alert-info">
+        <strong>Price per night:</strong> @room.RoomType.Price EGP
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-lg">Complete Booking</button>
+</form>

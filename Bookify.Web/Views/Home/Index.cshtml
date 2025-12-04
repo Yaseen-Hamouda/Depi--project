@@ -1,0 +1,79 @@
+﻿@model IEnumerable<Bookify.Core.Models.Room>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+<div id="homeSlider" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+
+        <div class="carousel-item active">
+            <img src="~/images/hDbCjHNdF48.svg" class="d-block w-100" style="height:450px; object-fit:cover;" />
+            <div class="carousel-caption d-none d-md-block">
+                <h2 class="animate__animated animate__fadeInDown">Welcome to Bookify</h2>
+                <p class="animate__animated animate__fadeInUp">Find the best rooms at the best prices</p>
+            </div>
+        </div>
+
+        <div class="carousel-item">
+            <img src="~/images/bedddd 34.svg" class="d-block w-100" style="height:450px; object-fit:cover;" />
+            <div class="carousel-caption d-none d-md-block">
+                <h2 class="animate__animated animate__fadeInDown">Luxury Rooms</h2>
+                <p class="animate__animated animate__fadeInUp">Comfort, Beauty & Affordability</p>
+            </div>
+        </div>
+         <div class="carousel-item">
+            <img src="~/images/Rectangle 2.svg" class="d-block w-100" style="height:450px; object-fit:cover;" />
+            <div class="carousel-caption d-none d-md-block">
+                <h2 class="animate__animated animate__fadeInDown">Luxury Rooms</h2>
+                <p class="animate__animated animate__fadeInUp">Comfort, Beauty & Affordability</p>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <img src="~/images//Rectangle 9.svg" class="d-block w-100" style="height:450px; object-fit:cover;" />
+            <div class="carousel-caption d-none d-md-block">
+                <h2 class="animate__animated animate__fadeInDown">Luxury Rooms</h2>
+                <p class="animate__animated animate__fadeInUp">Comfort, Beauty & Affordability</p>
+            </div>
+        </div>
+
+    </div>
+
+    <button class="carousel-control-prev" type="button" data-bs-target="#homeSlider" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </button>
+
+    <button class="carousel-control-next" type="button" data-bs-target="#homeSlider" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </button>
+</div>
+
+<hr />
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">Our Rooms</h2>
+
+    <div class="row">
+        @foreach (var room in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-lg">
+                    <img src="@room.ImageUrl" class="card-img-top" style="height:200px; object-fit:cover;" />
+
+                    <div class="card-body">
+                        <h5 class="card-title">@room.RoomType.Name</h5>
+                        <p class="card-text">Room Number: @room.RoomNumber</p>
+                        <p><strong>Price: @room.RoomType.Price $ / night</strong></p>
+
+                        <a asp-controller="Rooms" asp-action="Details" asp-route-id="@room.Id"
+                           class="btn btn-primary w-100">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="text-center mt-3">
+        <a class="btn btn-dark px-4" asp-controller="Rooms" asp-action="Index">View All Rooms</a>
+    </div>
+</div>

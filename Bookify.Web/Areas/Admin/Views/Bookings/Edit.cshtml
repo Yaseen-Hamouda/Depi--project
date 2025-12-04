@@ -1,0 +1,233 @@
+﻿@model Bookify.Core.Models.Booking
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mt-3 mb-4">
+    <h2><i class="fas fa-edit text-warning me-2"></i>Edit Booking #@Model.Id</h2>
+    <a asp-area="Admin" asp-controller="Bookings" asp-action="Index" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i> Back to List
+    </a>
+</div>
+
+<form asp-area="Admin" asp-controller="Bookings" asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+
+    <div class="row">
+        <!-- Left Column: Booking Details -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Booking Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="UserId" class="form-label fw-bold">Guest *</label>
+                                <select asp-for="UserId" asp-items="ViewBag.Users" class="form-select">
+                                    <option value="">-- Select Guest --</option>
+                                </select>
+                                <span asp-validation-for="UserId" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="RoomId" class="form-label fw-bold">Room *</label>
+                                <select asp-for="RoomId" asp-items="ViewBag.Rooms" class="form-select">
+                                    <option value="">-- Select Room --</option>
+                                </select>
+                                <span asp-validation-for="RoomId" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="CheckInDate" class="form-label fw-bold">Check-In Date *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-calendar-day"></i></span>
+                                    <input asp-for="CheckInDate" type="date" class="form-control" />
+                                </div>
+                                <span asp-validation-for="CheckInDate" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="CheckOutDate" class="form-label fw-bold">Check-Out Date *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-calendar-day"></i></span>
+                                    <input asp-for="CheckOutDate" type="date" class="form-control" />
+                                </div>
+                                <span asp-validation-for="CheckOutDate" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="TotalPrice" class="form-label fw-bold">Total Price</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input asp-for="TotalPrice" class="form-control" readonly />
+                                </div>
+                                <small class="text-muted">Calculated based on room price and duration</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label asp-for="PaymentStatus" class="form-label fw-bold">Payment Status *</label>
+                                <select asp-for="PaymentStatus" class="form-select">
+                                    <option value="Pending">⏳ Pending</option>
+                                    <option value="Paid">✅ Paid</option>
+                                    <option value="Failed">❌ Failed</option>
+                                </select>
+                                <span asp-validation-for="PaymentStatus" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Actions & Info -->
+        <div class="col-md-4">
+            <!-- Actions Card -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-warning btn-lg">
+                            <i class="fas fa-save me-2"></i> Update Booking
+                        </button>
+                        <a asp-area="Admin" asp-controller="Bookings" asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i> Cancel
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Summary Card -->
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Booking Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Booking ID</small>
+                        <div class="fw-bold">#@Model.Id</div>
+                    </div>
+
+                    @if (Model.CheckInDate != default && Model.CheckOutDate != default)
+                    {
+                        var nights = (Model.CheckOutDate - Model.CheckInDate).Days;
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Duration</small>
+                            <div class="fw-bold">@nights night(s)</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Current Status</small>
+                            @{
+                                var statusClass = Model.PaymentStatus switch
+                                {
+                                    "Paid" => "bg-success",
+                                    "Pending" => "bg-warning",
+                                    "Failed" => "bg-danger",
+                                    _ => "bg-secondary"
+                                };
+                            }
+                            <span class="badge @statusClass">@Model.PaymentStatus</span>
+                        </div>
+                    }
+
+                    <div class="alert alert-warning small">
+                        <i class="fas fa-exclamation-triangle me-1"></i>
+                        <strong>Note:</strong> Changes to check-in/out dates may affect the total price.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set minimum dates
+            const today = new Date().toISOString().split('T')[0];
+            const checkInInput = document.getElementById('CheckInDate');
+            const checkOutInput = document.getElementById('CheckOutDate');
+
+            // Update min date for check-out when check-in changes
+            checkInInput.addEventListener('change', function() {
+                checkOutInput.min = this.value;
+
+                // Auto-calculate nights and price
+                calculatePrice();
+            });
+
+            checkOutInput.addEventListener('change', function() {
+                calculatePrice();
+            });
+
+            // Function to calculate price based on dates
+            function calculatePrice() {
+                if (checkInInput.value && checkOutInput.value) {
+                    const checkIn = new Date(checkInInput.value);
+                    const checkOut = new Date(checkOutInput.value);
+
+                    if (checkOut > checkIn) {
+                        const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+                        const priceInput = document.getElementById('TotalPrice');
+                        const currentPrice = parseFloat(priceInput.value) || 0;
+                        const pricePerNight = currentPrice / nights;
+
+                        // You can implement your own price calculation logic here
+                        // For now, we'll keep the current price
+                        console.log(`Nights: ${nights}, Price per night: $${pricePerNight.toFixed(2)}`);
+                    }
+                }
+            }
+        });
+    </script>
+
+    <style>
+        .card {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+        }
+
+        .card-header {
+            border-radius: 10px 10px 0 0 !important;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+            font-weight: bold;
+        }
+
+        .form-label {
+            color: #495057;
+        }
+
+        .input-group-text {
+            background-color: #f8f9fa;
+            border-color: #dee2e6;
+        }
+
+        .bg-warning {
+            background-color: #ffc107 !important;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 0.35em 0.65em;
+        }
+    </style>
+}

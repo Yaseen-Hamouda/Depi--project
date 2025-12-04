@@ -1,0 +1,473 @@
+﻿@model Bookify.Core.Models.Room
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Edit Room";
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Page Header -->
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0">
+                                <i class="fas fa-edit me-2 text-primary"></i>
+                                Edit Room
+                            </h5>
+                            <p class="text-sm text-muted mb-0">
+                                Update information for Room <strong>#@Model.RoomNumber</strong>
+                            </p>
+                        </div>
+                        <div>
+                            <a href="/Admin/Rooms" class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-arrow-left me-1"></i>
+                                Back to Rooms
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Form -->
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="Edit" method="post" enctype="multipart/form-data" id="editRoomForm">
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="row">
+                            <!-- Left Column - Room Information -->
+                            <div class="col-md-8">
+                                <div class="card mb-4">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            Room Information
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <!-- Room Number -->
+                                        <div class="mb-3">
+                                            <label asp-for="RoomNumber" class="form-label fw-bold">
+                                                <i class="fas fa-hashtag me-2"></i>Room Number
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light">
+                                                    <i class="fas fa-door-closed"></i>
+                                                </span>
+                                                <input asp-for="RoomNumber" class="form-control"
+                                                       placeholder="Enter room number (e.g., 101, 102)" />
+                                            </div>
+                                            <span asp-validation-for="RoomNumber" class="text-danger small mt-1"></span>
+                                        </div>
+
+                                        <!-- Room Type -->
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">
+                                                <i class="fas fa-bed me-2"></i>Room Type
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light">
+                                                    <i class="fas fa-star"></i>
+                                                </span>
+                                                <select asp-for="RoomTypeId" asp-items="ViewBag.RoomTypes"
+                                                        class="form-select" id="roomTypeSelect">
+                                                    <option value="">-- Select Room Type --</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <!-- Room Status -->
+                                        <div class="mb-3">
+                                            <label asp-for="Status" class="form-label fw-bold">
+                                                <i class="fas fa-circle me-2"></i>Room Status
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-light">
+                                                    <i class="fas fa-info"></i>
+                                                </span>
+                                                <select asp-for="Status" class="form-select" id="statusSelect">
+                                                    <option value="Available" class="text-success">Available</option>
+                                                    <option value="Booked" class="text-danger">Booked</option>
+                                                    <option value="Maintenance" class="text-warning">Under Maintenance</option>
+                                                    <option value="Cleaning" class="text-info">Cleaning in Progress</option>
+                                                </select>
+                                            </div>
+                                            <span asp-validation-for="Status" class="text-danger small mt-1"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Column - Image Upload -->
+                            <div class="col-md-4">
+                                <div class="card mb-4">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-image me-2"></i>
+                                            Room Image
+                                        </h6>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <!-- Current Image Preview -->
+                                        <div class="mb-3">
+                                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                                            {
+                                                <div class="current-image mb-3">
+                                                    <p class="text-muted small mb-2">Current Image:</p>
+                                                    <img src="@Model.ImageUrl" id="currentImagePreview"
+                                                         class="img-fluid rounded shadow-sm border"
+                                                         alt="Room @Model.RoomNumber"
+                                                         style="max-height: 200px; object-fit: cover;" />
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="no-image mb-3">
+                                                    <div class="bg-light rounded p-4 mb-3">
+                                                        <i class="fas fa-image fa-3x text-muted mb-3"></i>
+                                                        <p class="text-muted mb-0">No image uploaded</p>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+
+                                        <!-- Image Upload -->
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">
+                                                <i class="fas fa-upload me-2"></i>Upload New Image
+                                            </label>
+                                            <div class="input-group">
+                                                <input type="file" name="ImageFile"
+                                                       class="form-control"
+                                                       id="imageFileInput"
+                                                       accept="image/*" />
+                                            </div>
+                                            <div class="form-text small">
+                                                Supported formats: JPG, PNG, GIF. Max size: 5MB
+                                            </div>
+                                        </div>
+
+                                        <!-- Image Preview -->
+                                        <div class="image-preview mt-3" id="imagePreviewContainer" style="display: none;">
+                                            <p class="text-muted small mb-2">New Image Preview:</p>
+                                            <img id="imagePreview"
+                                                 class="img-fluid rounded shadow-sm border"
+                                                 style="max-height: 150px; object-fit: cover;" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Quick Stats -->
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-chart-bar me-2"></i>
+                                            Quick Info
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-unstyled mb-0">
+                                            <li class="mb-2">
+                                                <i class="fas fa-calendar-alt text-primary me-2"></i>
+                                                <small>Last Updated: @DateTime.Now.ToString("MMM dd, yyyy")</small>
+                                            </li>
+                                            <li class="mb-2">
+                                                <i class="fas fa-clock text-info me-2"></i>
+                                                <small>Created: @DateTime.Now.AddDays(-30).ToString("MMM dd, yyyy")</small>
+                                            </li>
+                                            <li>
+                                                <i class="fas fa-id-badge text-success me-2"></i>
+                                                <small>Room ID: @Model.Id</small>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="card mt-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="window.history.back()">
+                                        <i class="fas fa-times me-2"></i>
+                                        Cancel
+                                    </button>
+
+                                    <div>
+                                        <button type="reset" class="btn btn-light me-2">
+                                            <i class="fas fa-redo me-2"></i>
+                                            Reset
+                                        </button>
+                                        <button type="submit" class="btn btn-primary px-4" id="submitBtn">
+                                            <i class="fas fa-save me-2"></i>
+                                            Update Room
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Image preview functionality
+        document.getElementById('imageFileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('imagePreview');
+            const previewContainer = document.getElementById('imagePreviewContainer');
+
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                }
+
+                reader.readAsDataURL(file);
+            } else {
+                previewContainer.style.display = 'none';
+            }
+        });
+
+        // Status color indicator
+        const statusSelect = document.getElementById('statusSelect');
+        function updateStatusColor() {
+            const selectedOption = statusSelect.options[statusSelect.selectedIndex];
+            const statusClass = selectedOption.className;
+            statusSelect.className = 'form-select ' + statusClass;
+        }
+
+        statusSelect.addEventListener('change', updateStatusColor);
+        updateStatusColor(); // Initial call
+
+        // Form submission handling
+        document.getElementById('editRoomForm').addEventListener('submit', function(e) {
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Updating...';
+
+            // Optional: Show processing message
+            const processingAlert = document.createElement('div');
+            processingAlert.className = 'alert alert-info alert-dismissible fade show mt-3';
+            processingAlert.innerHTML = `
+                <i class="fas fa-sync-alt fa-spin me-2"></i>
+                Updating room information. Please wait...
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            this.prepend(processingAlert);
+        });
+
+        // File size validation
+        document.getElementById('imageFileInput').addEventListener('change', function() {
+            const file = this.files[0];
+            const maxSize = 5 * 1024 * 1024; // 5MB
+
+            if (file && file.size > maxSize) {
+                alert('File size exceeds 5MB. Please choose a smaller file.');
+                this.value = '';
+                document.getElementById('imagePreviewContainer').style.display = 'none';
+            }
+        });
+
+        // Real-time validation feedback
+        const inputs = document.querySelectorAll('.form-control, .form-select');
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.value.trim() !== '') {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else {
+                    this.classList.remove('is-valid');
+                }
+            });
+
+            input.addEventListener('blur', function() {
+                if (this.value.trim() === '' && this.hasAttribute('required')) {
+                    this.classList.add('is-invalid');
+                }
+            });
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                document.getElementById('submitBtn').click();
+            }
+
+            if (e.key === 'Escape') {
+                window.history.back();
+            }
+        });
+
+        console.log('Room Edit Page Loaded for Room #@Model.RoomNumber');
+    </script>
+
+    <style>
+        /* Custom Styles */
+        .card {
+            border: none;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+            background-color: #f8f9fa;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem 0.5rem 0 0 !important;
+        }
+
+        .form-control, .form-select {
+            border: 1px solid #dee2e6;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            transition: all 0.3s ease;
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: #86b7fe;
+                box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+            }
+
+        .input-group-text {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #0d6efd, #0b5ed7);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+            .btn-primary:hover {
+                background: linear-gradient(45deg, #0b5ed7, #0a58ca);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(13, 110, 253, 0.25);
+            }
+
+        .btn-outline-secondary {
+            border: 1px solid #6c757d;
+            color: #6c757d;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+            .btn-outline-secondary:hover {
+                background-color: #6c757d;
+                color: white;
+            }
+
+        .text-success {
+            color: #198754 !important;
+        }
+
+        .text-danger {
+            color: #dc3545 !important;
+        }
+
+        .text-warning {
+            color: #ffc107 !important;
+        }
+
+        .text-info {
+            color: #0dcaf0 !important;
+        }
+
+        /* Image upload area */
+        #imagePreviewContainer {
+            animation: fadeIn 0.5s ease;
+        }
+
+        .current-image, .no-image {
+            animation: slideIn 0.5s ease;
+        }
+
+        /* Animations */
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @@keyframes slideIn {
+            from {
+                transform: translateY(10px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Status select styling */
+        .form-select.text-success {
+            color: #198754;
+            background-color: rgba(25, 135, 84, 0.1);
+        }
+
+        .form-select.text-danger {
+            color: #dc3545;
+            background-color: rgba(220, 53, 69, 0.1);
+        }
+
+        .form-select.text-warning {
+            color: #ffc107;
+            background-color: rgba(255, 193, 7, 0.1);
+        }
+
+        .form-select.text-info {
+            color: #0dcaf0;
+            background-color: rgba(13, 202, 240, 0.1);
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 768px) {
+            .card-body {
+                padding: 1rem !important;
+            }
+
+            .btn {
+                padding: 0.5rem 1rem !important;
+                font-size: 0.875rem;
+            }
+
+            .d-flex {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+                .d-flex > div {
+                    width: 100%;
+                }
+
+            .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+        }
+    </style>
+}

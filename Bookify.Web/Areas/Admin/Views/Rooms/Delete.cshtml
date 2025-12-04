@@ -1,0 +1,18 @@
+﻿@model Bookify.Core.Models.Room
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Delete Room</h2>
+
+<div class="alert alert-danger">
+    Are you sure you want to delete room <strong>@Model.RoomNumber</strong>?
+</div>
+
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" asp-for="Id" />
+    <button class="btn btn-danger">Delete</button>
+    <a href="/Admin/Rooms" class="btn btn-secondary">Cancel</a>
+</form>
