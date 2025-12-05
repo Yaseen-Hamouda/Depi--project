@@ -12,7 +12,6 @@
 
     <form asp-action="CompleteBooking" asp-controller="Booking" method="post">
         @Html.AntiForgeryToken()
-
         <input type="hidden" name="id" value="@Model.Id" />
 
         <div class="mb-3">
@@ -22,7 +21,6 @@
                 <option value="Online">Online (Stripe)</option>
             </select>
         </div>
-        <input type="hidden" name="id" value="@Model.Id" />
 
         <button type="submit" class="btn btn-success">Complete Booking</button>
     </form>

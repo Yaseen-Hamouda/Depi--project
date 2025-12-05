@@ -1,6 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
 
 namespace Bookify.Core.Models
 {
@@ -9,7 +18,11 @@ namespace Bookify.Core.Models
         public int Id { get; set; }
 
         [Required]
+
         public string UserId { get; set; } = string.Empty;
+
+       
+
 
         [Required]
         public int RoomId { get; set; }
@@ -21,6 +34,7 @@ namespace Bookify.Core.Models
         public DateTime CheckOutDate { get; set; }
 
         [Required]
+
         [Column(TypeName = "decimal(18,2)")]  // تحديد Precision و Scale
         public decimal TotalPrice { get; set; }
 
@@ -34,9 +48,13 @@ namespace Bookify.Core.Models
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime? UpdatedAt { get; set; }
 
+       
+
+
         // Navigation
 
         [ValidateNever]
+
         public ApplicationUser User { get; set; } = null!;
 
         [ValidateNever]
@@ -46,3 +64,7 @@ namespace Bookify.Core.Models
         public ICollection<Payment> Payments { get; set; } = new List<Payment>(); // One-to-Many
     }
 }
+
+       
+   
+

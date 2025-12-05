@@ -1,714 +1,181 @@
 ﻿@model IEnumerable<Bookify.Core.Models.Booking>
-@{
-    ViewData["Title"] = "My Bookings";
-    var upcomingBookings = Model.Where(b => b.CheckInDate > DateTime.Now).OrderBy(b => b.CheckInDate);
-    var activeBookings = Model.Where(b => b.CheckInDate <= DateTime.Now && b.CheckOutDate >= DateTime.Now);
-    var pastBookings = Model.Where(b => b.CheckOutDate < DateTime.Now).OrderByDescending(b => b.CheckOutDate);
+
+<h2 class="mb-4 text-primary"><i class="fas fa-calendar-alt me-2"></i>My Bookings</h2>
+
+@if (!Model.Any())
+{
+    <div class="card border-info">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted">No Bookings Yet</h4>
+            <p class="text-muted">You haven't made any bookings yet.</p>
+            <a href="@Url.Action("Index", "Rooms")" class="btn btn-primary mt-2">
+                <i class="fas fa-search me-1"></i>Browse Rooms
+            </a>
+        </div>
+    </div>
 }
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
-<div class="container py-4">
-    <!-- Header Section -->
-    <div class="row mb-5">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1 class="display-6 fw-bold text-primary">
-                        <i class="fas fa-calendar-check me-3"></i>My Bookings
-                    </h1>
-                    <p class="lead text-muted">View and manage all your room bookings in one place</p>
-                </div>
-                <div class="text-end">
-                    <div class="badge bg-info text-dark fs-6 p-3 mb-2">
-                        <i class="fas fa-hashtag me-2"></i>@Model.Count() Total Bookings
-                    </div>
-                    <div>
-                        <small class="text-muted">
-                            <i class="fas fa-sync-alt me-1"></i>Last updated: @DateTime.Now.ToString("hh:mm tt")
-                        </small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Booking Stats Cards -->
-    <div class="row mb-5">
-        <div class="col-md-4 mb-4">
-            <div class="card border-start-primary border-3 border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-uppercase text-muted mb-2">
-                                <i class="fas fa-clock me-2"></i>Upcoming
-                            </h6>
-                            <h2 class="fw-bold text-primary mb-0">@upcomingBookings.Count()</h2>
-                        </div>
-                        <div class="icon-circle bg-primary-light text-primary">
-                            <i class="fas fa-calendar-plus fa-2x"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <small class="text-muted">
-                            @if (upcomingBookings.Any())
-                            {
-                                <span>Next: @upcomingBookings.First().CheckInDate.ToString("MMM dd")</span>
-                            }
-                            else
-                            {
-                                <span>No upcoming bookings</span>
-                            }
-                        </small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-4">
-            <div class="card border-start-success border-3 border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-uppercase text-muted mb-2">
-                                <i class="fas fa-bed me-2"></i>Active Now
-                            </h6>
-                            <h2 class="fw-bold text-success mb-0">@activeBookings.Count()</h2>
-                        </div>
-                        <div class="icon-circle bg-success-light text-success">
-                            <i class="fas fa-key fa-2x"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <small class="text-muted">
-                            @if (activeBookings.Any())
-                            {
-                                <span>Checked in now</span>
-                            }
-                            else
-                            {
-                                <span>No active bookings</span>
-                            }
-                        </small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-4">
-            <div class="card border-start-warning border-3 border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-uppercase text-muted mb-2">
-                                <i class="fas fa-history me-2"></i>Past Stays
-                            </h6>
-                            <h2 class="fw-bold text-warning mb-0">@pastBookings.Count()</h2>
-                        </div>
-                        <div class="icon-circle bg-warning-light text-warning">
-                            <i class="fas fa-archive fa-2x"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <small class="text-muted">
-                            @if (pastBookings.Any())
-                            {
-                                <span>Last: @pastBookings.First().CheckOutDate.ToString("MMM dd")</span>
-                            }
-                            else
-                            {
-                                <span>No past bookings</span>
-                            }
-                        </small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tabs Navigation -->
-    <ul class="nav nav-tabs mb-4" id="bookingTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="upcoming-tab" data-bs-toggle="tab" data-bs-target="#upcoming" type="button" role="tab">
-                <i class="fas fa-clock me-2"></i>Upcoming (@upcomingBookings.Count())
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="active-tab" data-bs-toggle="tab" data-bs-target="#active" type="button" role="tab">
-                <i class="fas fa-bed me-2"></i>Active (@activeBookings.Count())
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="past-tab" data-bs-toggle="tab" data-bs-target="#past" type="button" role="tab">
-                <i class="fas fa-history me-2"></i>Past (@pastBookings.Count())
-            </button>
-        </li>
-    </ul>
-
-    <!-- Tabs Content -->
-    <div class="tab-content" id="bookingTabsContent">
-        <!-- Upcoming Bookings Tab -->
-        <div class="tab-pane fade show active" id="upcoming" role="tabpanel">
-            @if (upcomingBookings.Any())
-            {
-                <div class="row">
-                    @foreach (var booking in upcomingBookings)
-                    {
-                        var daysUntil = (booking.CheckInDate - DateTime.Now).Days;
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card h-100 shadow-sm border-start-info border-3 border-0">
-                                <div class="card-header bg-white border-bottom-0 pb-0">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <span class="badge bg-info rounded-pill px-3 py-2">
-                                                <i class="fas fa-calendar-day me-1"></i>In @daysUntil days
-                                            </span>
+else
+{
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light text-dark">
+                        <tr>
+                            <th class="py-3 px-4">
+                                <i class="fas fa-door-closed me-2"></i>Room
+                            </th>
+                            <th class="py-3 px-4">
+                                <i class="fas fa-sign-in-alt me-2"></i>Check In
+                            </th>
+                            <th class="py-3 px-4">
+                                <i class="fas fa-sign-out-alt me-2"></i>Check Out
+                            </th>
+                            <th class="py-3 px-4">
+                                <i class="fas fa-dollar-sign me-2"></i>Total Price
+                            </th>
+                            <th class="py-3 px-4">
+                                <i class="fas fa-info-circle me-2"></i>Status
+                            </th>
+                            <th class="py-3 px-4 text-center">
+                                <i class="fas fa-cogs me-2"></i>Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var booking in Model.OrderByDescending(b => b.CheckInDate))
+                        {
+                            <tr class="align-middle">
+                                <td class="px-4 py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
+                                             style="width: 40px; height: 40px;">
+                                            <i class="fas fa-bed"></i>
                                         </div>
-                                        <div>
-                                            <small class="text-muted">#@booking.Id</small>
+                                        <div class="ms-3">
+                                            <strong>Room @booking.Room?.RoomNumber</strong>
+                                            <small class="d-block text-muted">@booking.Room?.RoomType</small>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="card-body">
-                                    <h5 class="card-title">
-                                        <i class="fas fa-door-open text-primary me-2"></i>
-                                        Room @booking.Room?.RoomNumber
-                                    </h5>
-                                    <div class="booking-details">
-                                        <div class="mb-3">
-                                            <div class="d-flex justify-content-between mb-2">
-                                                <span class="text-muted">
-                                                    <i class="fas fa-sign-in-alt me-2"></i>Check-in
-                                                </span>
-                                                <span class="fw-bold">@booking.CheckInDate.ToString("ddd, MMM dd")</span>
-                                            </div>
-                                            <div class="d-flex justify-content-between mb-2">
-                                                <span class="text-muted">
-                                                    <i class="fas fa-sign-out-alt me-2"></i>Check-out
-                                                </span>
-                                                <span class="fw-bold">@booking.CheckOutDate.ToString("ddd, MMM dd")</span>
-                                            </div>
-                                            <div class="d-flex justify-content-between">
-                                                <span class="text-muted">
-                                                    <i class="fas fa-moon me-2"></i>Duration
-                                                </span>
-                                                <span class="fw-bold">@((booking.CheckOutDate - booking.CheckInDate).Days) nights</span>
-                                            </div>
-                                        </div>
-                                        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
-                                            <div>
-                                                <h4 class="text-success mb-0">$@booking.TotalPrice</h4>
-                                                <small class="text-muted">Total amount</small>
-                                            </div>
-                                            <div class="text-end">
-                                                @{
-                                                    var statusClass = booking.PaymentStatus?.ToLower() == "paid" ? "success" : "warning";
-                                                }
-                                                <span class="badge bg-@statusClass rounded-pill px-3 py-2">
-                                                    @booking.PaymentStatus
-                                                </span>
-                                                <div class="mt-2">
-                                                    <button class="btn btn-outline-primary btn-sm">
-                                                        <i class="fas fa-edit me-1"></i>Modify
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-footer bg-white border-top-0 pt-0">
-                                    <div class="text-center">
-                                        <small class="text-muted">
-                                            <i class="fas fa-info-circle me-1"></i>
-                                            You can cancel for free until @booking.CheckInDate.AddDays(-1).ToString("MMM dd")
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                </div>
-            }
-            else
-            {
-                <div class="text-center py-5">
-                    <div class="empty-state">
-                        <i class="fas fa-calendar-plus fa-4x text-muted mb-4"></i>
-                        <h4 class="text-muted">No upcoming bookings</h4>
-                        <p class="text-muted mb-4">You don't have any upcoming reservations</p>
-                        <a href="@Url.Action("Index", "Rooms")" class="btn btn-primary">
-                            <i class="fas fa-search me-2"></i>Browse Rooms
-                        </a>
-                    </div>
-                </div>
-            }
-        </div>
-
-        <!-- Active Bookings Tab -->
-        <div class="tab-pane fade" id="active" role="tabpanel">
-            @if (activeBookings.Any())
-            {
-                <div class="row">
-                    @foreach (var booking in activeBookings)
-                    {
-                        var nightsLeft = (booking.CheckOutDate - DateTime.Now).Days;
-                        <div class="col-12 mb-4">
-                            <div class="card shadow border-start-success border-3 border-0">
-                                <div class="card-body p-4">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-3 text-center mb-3 mb-md-0">
-                                            <div class="icon-circle-xl bg-success text-white mb-3">
-                                                <i class="fas fa-key fa-3x"></i>
-                                            </div>
-                                            <h5 class="text-success mb-0">Checked In</h5>
-                                            <small class="text-muted">Since @booking.CheckInDate.ToString("MMM dd")</small>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <h4 class="card-title">
-                                                <i class="fas fa-door-open text-success me-2"></i>
-                                                Room @booking.Room?.RoomNumber
-                                            </h4>
-                                            <div class="row mt-3">
-                                                <div class="col-6">
-                                                    <div class="mb-2">
-                                                        <small class="text-muted">Check-out Date</small>
-                                                        <div class="fw-bold">@booking.CheckOutDate.ToString("ddd, MMM dd yyyy")</div>
-                                                    </div>
-                                                    <div>
-                                                        <small class="text-muted">Booking ID</small>
-                                                        <div class="fw-bold">#@booking.Id</div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-6">
-                                                    <div class="mb-2">
-                                                        <small class="text-muted">Nights Remaining</small>
-                                                        <div class="fw-bold">
-                                                            <span class="badge bg-info">@nightsLeft nights left</span>
-                                                        </div>
-                                                    </div>
-                                                    <div>
-                                                        <small class="text-muted">Status</small>
-                                                        <div>
-                                                            <span class="badge bg-success">@booking.PaymentStatus</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3 text-center">
-                                            <h3 class="text-success mb-3">$@booking.TotalPrice</h3>
-                                            <div class="d-grid gap-2">
-                                                <button class="btn btn-outline-success">
-                                                    <i class="fas fa-phone-alt me-1"></i>Request Service
-                                                </button>
-                                                <button class="btn btn-outline-primary">
-                                                    <i class="fas fa-clock me-1"></i>Extend Stay
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                </div>
-            }
-            else
-            {
-                <div class="text-center py-5">
-                    <div class="empty-state">
-                        <i class="fas fa-bed fa-4x text-muted mb-4"></i>
-                        <h4 class="text-muted">No active bookings</h4>
-                        <p class="text-muted mb-4">You're not currently checked in anywhere</p>
-                    </div>
-                </div>
-            }
-        </div>
-
-        <!-- Past Bookings Tab -->
-        <div class="tab-pane fade" id="past" role="tabpanel">
-            @if (pastBookings.Any())
-            {
-                <div class="card shadow border-0">
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th class="ps-4">Room</th>
-                                        <th>Stay Period</th>
-                                        <th>Duration</th>
-                                        <th>Amount</th>
-                                        <th>Status</th>
-                                        <th class="text-end pe-4">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var booking in pastBookings)
-                                    {
-                                        <tr>
-                                            <td class="ps-4">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="avatar-circle-sm bg-secondary text-white me-3">
-                                                        <i class="fas fa-door-closed"></i>
-                                                    </div>
-                                                    <div>
-                                                        <div class="fw-bold">Room @booking.Room?.RoomNumber</div>
-                                                        <small class="text-muted">#@booking.Id</small>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div>
-                                                    <div class="fw-bold">@booking.CheckInDate.ToString("MMM dd") - @booking.CheckOutDate.ToString("MMM dd")</div>
-                                                    <small class="text-muted">@booking.CheckInDate.Year</small>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <span class="badge bg-light text-dark">
-                                                    @((booking.CheckOutDate - booking.CheckInDate).Days) nights
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <div class="fw-bold">$@booking.TotalPrice</div>
-                                            </td>
-                                            <td>
-                                                <span class="badge bg-success rounded-pill">@booking.PaymentStatus</span>
-                                            </td>
-                                            <td class="text-end pe-4">
-                                                <div class="btn-group btn-group-sm" role="group">
-                                                    <button class="btn btn-outline-secondary"
-                                                            onclick="downloadReceipt(@booking.Id)">
-                                                        <i class="fas fa-receipt"></i>
-                                                    </button>
-                                                    <button class="btn btn-outline-info"
-                                                            onclick="bookAgain(@booking.RoomId)">
-                                                        <i class="fas fa-redo"></i>
-                                                    </button>
-                                                    <button class="btn btn-outline-warning"
-                                                            onclick="writeReview(@booking.Id)">
-                                                        <i class="fas fa-star"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Year Summary -->
-                <div class="row mt-5">
-                    <div class="col-md-6">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body">
-                                <h6 class="card-title">
-                                    <i class="fas fa-chart-bar me-2"></i>Year Summary
-                                </h6>
-                                <div class="d-flex justify-content-between align-items-center mt-3">
-                                    <div>
-                                        <h3 class="text-primary">@pastBookings.Count()</h3>
-                                        <small class="text-muted">Total stays this year</small>
-                                    </div>
-                                    <div>
-                                        <h3 class="text-success">$@pastBookings.Sum(b => b.TotalPrice).ToString("N2")</h3>
-                                        <small class="text-muted">Total spent</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body">
-                                <h6 class="card-title">
-                                    <i class="fas fa-crown me-2"></i>Most Booked Room
-                                </h6>
-                                <div class="text-center py-3">
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="fw-bold">@booking.CheckInDate.ToString("dd MMM yyyy")</div>
+                                    <small class="text-muted">@booking.CheckInDate.DayOfWeek</small>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="fw-bold">@booking.CheckOutDate.ToString("dd MMM yyyy")</div>
+                                    <small class="text-muted">@booking.CheckOutDate.DayOfWeek</small>
+                                </td>
+                                <td class="px-4 py-3 fw-bold text-success">
+                                    $@booking.TotalPrice.ToString("N0")
+                                </td>
+                                <td class="px-4 py-3">
                                     @{
-                                        var mostBookedRoom = pastBookings
-                                        .GroupBy(b => b.Room?.RoomNumber)
-                                        .OrderByDescending(g => g.Count())
-                                        .FirstOrDefault();
+                                        string badgeClass = "";
+                                        string iconClass = "";
+                                        string statusText = booking.PaymentStatus?.ToString() ?? "Unknown";
+
+                                        switch (statusText)
+                                        {
+                                            case "Paid":
+                                                badgeClass = "badge bg-success";
+                                                iconClass = "fas fa-check-circle";
+                                                break;
+                                            case "Pending":
+                                                badgeClass = "badge bg-warning";
+                                                iconClass = "fas fa-clock";
+                                                break;
+                                            case "Cancelled":
+                                                badgeClass = "badge bg-danger";
+                                                iconClass = "fas fa-times-circle";
+                                                break;
+                                            case "Confirmed":
+                                                badgeClass = "badge bg-info";
+                                                iconClass = "fas fa-check";
+                                                break;
+                                            case "Completed":
+                                                badgeClass = "badge bg-secondary";
+                                                iconClass = "fas fa-flag-checkered";
+                                                break;
+                                            default:
+                                                badgeClass = "badge bg-secondary";
+                                                iconClass = "fas fa-question-circle";
+                                                break;
+                                        }
                                     }
-                                    @if (mostBookedRoom != null)
-                                    {
-                                        <h1 class="display-4 text-warning mb-2">
-                                            <i class="fas fa-door-open"></i>
-                                        </h1>
-                                        <h4 class="mb-1">Room @mostBookedRoom.Key</h4>
-                                        <p class="text-muted mb-0">Booked @mostBookedRoom.Count() times</p>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-            else
-            {
-                <div class="text-center py-5">
-                    <div class="empty-state">
-                        <i class="fas fa-history fa-4x text-muted mb-4"></i>
-                        <h4 class="text-muted">No past bookings</h4>
-                        <p class="text-muted mb-4">You haven't stayed with us before</p>
-                        <a href="@Url.Action("Index", "Rooms")" class="btn btn-primary">
-                            <i class="fas fa-plus me-2"></i>Book Your First Stay
-                        </a>
-                    </div>
-                </div>
-            }
+                                    <span class="@badgeClass p-2 rounded-pill d-inline-flex align-items-center">
+                                        <i class="@iconClass me-1"></i>
+                                        @statusText
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <div class="btn-group" role="group">
+                                        <a href="@Url.Action("Details", "Booking", new { id = booking.Id })"
+                                           class="btn btn-sm btn-outline-primary"
+                                           title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        @if (statusText == "Pending")
+                                        {
+                                            <a href="@Url.Action("Edit", "Booking", new { id = booking.Id })"
+                                               class="btn btn-sm btn-outline-warning"
+                                               title="Edit Booking">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        }
+                                        @if (booking.CheckInDate > DateTime.Now)
+                                        {
+                                            <a href="@Url.Action("Cancel", "Booking", new { id = booking.Id })"
+                                               class="btn btn-sm btn-outline-danger"
+                                               title="Cancel Booking"
+                                               onclick="return confirm('Are you sure you want to cancel this booking?')">
+                                                <i class="fas fa-times"></i>
+                                            </a>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="row mt-5">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm">
+    <!-- Summary Card -->
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
                 <div class="card-body">
-                    <h5 class="card-title mb-4">
-                        <i class="fas fa-bolt me-2"></i>Quick Actions
-                    </h5>
-                    <div class="row g-3">
-                        <div class="col-md-3 col-6">
-                            <a href="@Url.Action("Create", "Bookings")" class="btn btn-outline-primary w-100 py-3">
-                                <i class="fas fa-plus-circle fa-2x mb-2"></i>
-                                <div>New Booking</div>
-                            </a>
-                        </div>
-                        <div class="col-md-3 col-6">
-                            <button class="btn btn-outline-success w-100 py-3" onclick="showUpcoming()">
-                                <i class="fas fa-calendar-alt fa-2x mb-2"></i>
-                                <div>View Calendar</div>
-                            </button>
-                        </div>
-                        <div class="col-md-3 col-6">
-                            <button class="btn btn-outline-info w-100 py-3" onclick="downloadAllReceipts()">
-                                <i class="fas fa-file-download fa-2x mb-2"></i>
-                                <div>Download All</div>
-                            </button>
-                        </div>
-                        <div class="col-md-3 col-6">
-                            <button class="btn btn-outline-warning w-100 py-3" onclick="contactSupport()">
-                                <i class="fas fa-headset fa-2x mb-2"></i>
-                                <div>Get Help</div>
-                            </button>
-                        </div>
-                    </div>
+                    <h6 class="card-title">Total Bookings</h6>
+                    <h3 class="mb-0">@Model.Count()</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Paid</h6>
+                    <h3 class="mb-0">@Model.Count(b => b.PaymentStatus?.ToString() == "Paid")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Upcoming</h6>
+                    <h3 class="mb-0">@Model.Count(b => b.CheckInDate > DateTime.Now)</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Pending</h6>
+                    <h3 class="mb-0">@Model.Count(b => b.PaymentStatus?.ToString() == "Pending")</h3>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-@section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-        // Tab functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const triggerTabList = [].slice.call(document.querySelectorAll('#bookingTabs button'));
-            triggerTabList.forEach(function (triggerEl) {
-                const tabTrigger = new bootstrap.Tab(triggerEl);
-                triggerEl.addEventListener('click', function (event) {
-                    event.preventDefault();
-                    tabTrigger.show();
-                });
-            });
-
-            // Load default tab from URL hash or localStorage
-            const hash = window.location.hash;
-            if (hash) {
-                const tab = document.querySelector(`[data-bs-target="${hash}"]`);
-                if (tab) bootstrap.Tab.getInstance(tab).show();
-            } else {
-                const savedTab = localStorage.getItem('selectedBookingTab');
-                if (savedTab) {
-                    const tab = document.querySelector(`[data-bs-target="#${savedTab}"]`);
-                    if (tab) bootstrap.Tab.getInstance(tab).show();
-                }
-            }
-
-            // Save selected tab
-            document.querySelectorAll('#bookingTabs button').forEach(tab => {
-                tab.addEventListener('shown.bs.tab', function (e) {
-                    const target = e.target.getAttribute('data-bs-target').substring(1);
-                    localStorage.setItem('selectedBookingTab', target);
-                    window.location.hash = target;
-                });
-            });
-        });
-
-        // Action functions
-        function downloadReceipt(bookingId) {
-            alert(`Downloading receipt for booking #${bookingId}`);
-            // Implement actual download logic
-        }
-
-        function bookAgain(roomId) {
-            window.location.href = `/Bookings/Create?roomId=${roomId}`;
-        }
-
-        function writeReview(bookingId) {
-            alert(`Writing review for booking #${bookingId}`);
-            // Implement review modal
-        }
-
-        function showUpcoming() {
-            const upcomingTab = document.querySelector('[data-bs-target="#upcoming"]');
-            bootstrap.Tab.getInstance(upcomingTab).show();
-        }
-
-        function downloadAllReceipts() {
-            alert('Downloading all receipts...');
-            // Implement bulk download
-        }
-
-        function contactSupport() {
-            window.location.href = 'mailto:support@bookify.com';
-        }
-
-        // Auto-refresh every minute for active bookings
-        setInterval(() => {
-            const activeTab = document.querySelector('#active-tab');
-            if (activeTab.classList.contains('active')) {
-                // Reload active bookings section only
-                console.log('Refreshing active bookings...');
-            }
-        }, 60000);
-    </script>
-
-    <style>
-        .icon-circle {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .icon-circle-xl {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .icon-circle-sm {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .bg-primary-light {
-            background-color: rgba(13, 110, 253, 0.1);
-        }
-
-        .bg-success-light {
-            background-color: rgba(25, 135, 84, 0.1);
-        }
-
-        .bg-warning-light {
-            background-color: rgba(255, 193, 7, 0.1);
-        }
-
-        .avatar-circle-sm {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-        }
-
-        .nav-tabs .nav-link {
-            border: none;
-            color: #6c757d;
-            font-weight: 500;
-            padding: 1rem 1.5rem;
-            transition: all 0.3s;
-        }
-
-            .nav-tabs .nav-link.active {
-                color: #0d6efd;
-                border-bottom: 3px solid #0d6efd;
-                background-color: transparent;
-            }
-
-            .nav-tabs .nav-link:hover {
-                color: #0d6efd;
-                border-bottom: 3px solid rgba(13, 110, 253, 0.3);
-            }
-
-        .empty-state {
-            opacity: 0.7;
-        }
-
-        .card {
-            border-radius: 12px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-            .card:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 5px 20px rgba(0,0,0,0.1) !important;
-            }
-
-        .border-start-primary {
-            border-left-color: #0d6efd !important;
-        }
-
-        .border-start-success {
-            border-left-color: #198754 !important;
-        }
-
-        .border-start-warning {
-            border-left-color: #ffc107 !important;
-        }
-
-        .border-start-info {
-            border-left-color: #0dcaf0 !important;
-        }
-
-        .btn-outline-primary:hover .fa-plus-circle,
-        .btn-outline-success:hover .fa-calendar-alt,
-        .btn-outline-info:hover .fa-file-download,
-        .btn-outline-warning:hover .fa-headset {
-            transform: scale(1.1);
-            transition: transform 0.3s;
-        }
-
-        media (max-width: 768px) {
-            .display-6
-
-        {
-            font-size: 1.8rem;
-        }
-
-        .nav-tabs .nav-link {
-            padding: 0.75rem;
-            font-size: 0.9rem;
-        }
-
-        .icon-circle {
-            width: 50px;
-            height: 50px;
-        }
-
-            .icon-circle i {
-                font-size: 1.5rem;
-            }
-
-        }
-    </style>
 }

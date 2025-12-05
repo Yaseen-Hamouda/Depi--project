@@ -13,9 +13,10 @@ namespace Bookify.Web
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Services
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(
+                    builder.Configuration.GetConnectionString("DefaultConnection")
+                ));
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
@@ -35,7 +36,6 @@ namespace Bookify.Web
 
             var app = builder.Build();
 
-            // Pipeline
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
@@ -48,16 +48,23 @@ namespace Bookify.Web
             app.UseAuthentication();
             app.UseAuthorization();
 
-            // ?? **???????? ?????? ????** ??
+            app.MapAreaControllerRoute(
+            name: "AdminArea",
+            areaName: "Admin",
+            pattern: "Admin/{controller=RoomTypes}/{action=Index}/{id?}");
+
             app.MapControllerRoute(
-                name: "areas",
-                pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+                name: "booking",
+                pattern: "Booking/{action=MyBookings}/{id?}",
+                defaults: new { controller = "Booking" });
 
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+                
 
             app.MapRazorPages();
+
 
             await app.RunAsync();
         }

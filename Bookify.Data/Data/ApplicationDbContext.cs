@@ -1,7 +1,9 @@
 ﻿using Bookify.Core.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+
 using System.Reflection;
+
 
 namespace Bookify.Data.Data
 {
@@ -18,30 +20,44 @@ namespace Bookify.Data.Data
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Payment> Payments { get; set; }
 
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
+
             // RoomType → Rooms (One-to-Many)
+
+            // RoomType → Rooms (1 - Many)
+
             builder.Entity<RoomType>()
                 .HasMany(rt => rt.Rooms)
                 .WithOne(r => r.RoomType)
                 .HasForeignKey(r => r.RoomTypeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+
             // Room → Bookings (One-to-Many)
+
+            // Room → Bookings (1 - Many)
+
             builder.Entity<Room>()
                 .HasMany(r => r.Bookings)
                 .WithOne(b => b.Room)
                 .HasForeignKey(b => b.RoomId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+
             // ApplicationUser → Bookings (One-to-Many)
+
+            // ApplicationUser → Bookings (1 - Many)
+
             builder.Entity<ApplicationUser>()
                 .HasMany(u => u.Bookings)
                 .WithOne(b => b.User)
                 .HasForeignKey(b => b.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
 
             // ===== التصحيح هنا =====
             // Booking → Payments (One-to-Many) وليس One-to-One
@@ -101,3 +117,6 @@ namespace Bookify.Data.Data
         }
     }
 }
+
+            
+

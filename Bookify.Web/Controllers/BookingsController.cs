@@ -87,14 +87,19 @@ namespace Bookify.Web.Controllers
         // POST: Complete Booking
         // -----------------------------
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CompleteBooking(int id, string paymentMethod)
         {
+            // 1) نجيب الحجز
             var booking = await _unitOfWork.Bookings.GetByIdAsync(id);
-            if (booking == null) return NotFound();
+            if (booking == null)
+                return NotFound();
 
+            // 2) تحديث حالة الدفع
             booking.PaymentStatus = paymentMethod == "Online" ? "Paid" : "Pending";
 
+            // 3) إضافة عملية الدفع في جدول Payments
             var payment = new Payment
             {
                 BookingId = booking.Id,
@@ -105,13 +110,27 @@ namespace Bookify.Web.Controllers
 
             await _unitOfWork.Payments.AddAsync(payment);
 
+            // 4) تحديث حالة الغرفة
             var room = await _unitOfWork.Rooms.GetByIdAsync(booking.RoomId);
             room.Status = "Booked";
 
+            // 5) حفظ كل التغييرات
             await _unitOfWork.CompleteAsync();
 
+            // 6) رجوع لصفحة الحجوزات
             return RedirectToAction("MyBookings", "Booking");
-
         }
+
+        [Authorize]
+        public async Task<IActionResult> MyBookings()
+        {
+            var userId = _userManager.GetUserId(User);
+
+            var bookings = await _unitOfWork.Bookings
+                .FindAsync(x => x.UserId == userId);
+
+            return View(bookings);
+        }
+
     }
 }
